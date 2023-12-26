@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from docx import Document
 import os
-# from flask_cors import CORS
+from flask_cors import CORS
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -10,7 +10,7 @@ from email.mime.application import MIMEApplication
 app = Flask(__name__)
 
 
-# CORS(app, supports_credentials=True, origins=["https://e-verification-bkfr.vercel.app", "http://127.0.0.1:5000", "http://127.0.0.1:5173", "https://www.bioentrust.net"])
+CORS(app, supports_credentials=True, origins=["https://e-verification-bkfr.vercel.app", "http://127.0.0.1:5000", "http://127.0.0.1:5173", "https://www.bioentrust.net"])
 
 @app.route('/')
 def index():
