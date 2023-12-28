@@ -39,8 +39,8 @@ def generate_affidavit():
 
 
     # Open the DOCX file in the project directory
-    docx_file_path = 'C:/Users/Lenovo/Documents/E-Verification/Affidavit  Server/loss_of_sim_card.docx'  
-    docx_file_path1 = 'C:/Users/Lenovo/Documents/E-Verification/Affidavit  Server/FG_contract_Tender.docx'  
+    docx_file_path = './loss_of_sim_card.docx'  
+    docx_file_path1 = './FG_contract_Tender.docx'  
     
     if reason == 'SIM Retrieval':
         doc = Document(docx_file_path)
