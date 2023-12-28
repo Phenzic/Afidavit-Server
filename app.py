@@ -17,8 +17,6 @@ def index():
     return 'Welcome to the e-affidavit server!'
 
 
-
-
 @app.route('/generate_affidavit', methods=['POST'])
 def generate_affidavit():
     # Get parameters from the request
