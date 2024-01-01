@@ -77,86 +77,86 @@ def get_id():
         }
         return jsonify(error_message), 500
 
-@app.route('/generate_affidavit', methods=['POST'])
-def generate_affidavit():
-    """
-    Endpoint to generate an affidavit.
-    """
-    # Get parameters from the request
-    first_name = request.json['first_name']
-    middle_name = request.json['middle_name']
-    last_name = request.json['last_name']
-    reason = request.json['reason']
-    address = request.json['address']
-    religion = request.json['religion']
-    mobile = request.json['mobile']
-    email = request.json['email']
-    # signature = request.json['signature']
-    date_of_loss = request.json['date_of_loss']
-    network = request.json['network']
-    date = request.json['date']
-    position = request.json['position']
-    gender = request.json['gender']
-    company_address = request.json['company_address']
-    seal_sign = request.json['seal_sign']
+# @app.route('/generate_affidavit', methods=['POST'])
+# def generate_affidavit():
+#     """
+#     Endpoint to generate an affidavit.
+#     """
+#     # Get parameters from the request
+#     first_name = request.json['first_name']
+#     middle_name = request.json['middle_name']
+#     last_name = request.json['last_name']
+#     reason = request.json['reason']
+#     address = request.json['address']
+#     religion = request.json['religion']
+#     mobile = request.json['mobile']
+#     email = request.json['email']
+#     # signature = request.json['signature']
+#     date_of_loss = request.json['date_of_loss']
+#     network = request.json['network']
+#     date = request.json['date']
+#     position = request.json['position']
+#     gender = request.json['gender']
+#     company_address = request.json['company_address']
+#     seal_sign = request.json['seal_sign']
 
-    # Open the DOCX file in the project directory
-    docx_file_path = './loss_of_sim_card.docx'  
-    docx_file_path1 = './FG_contract_Tender.docx' 
+#     # Open the DOCX file in the project directory
+#     docx_file_path = './loss_of_sim_card.docx'  
+#     docx_file_path1 = './FG_contract_Tender.docx' 
 
-    os.chmod(docx_file_path, stat.S_IWOTH)
-    os.chmod(docx_file_path1, stat.S_IWOTH)
+#     os.chmod(docx_file_path, stat.S_IWOTH)
+#     os.chmod(docx_file_path1, stat.S_IWOTH)
     
-    if reason == 'SIM Retrieval':
-        doc = Document(docx_file_path)
-    elif reason == "FG_contract_Tender":
-        doc = Document(docx_file_path1)
+#     if reason == 'SIM Retrieval':
+#         doc = Document(docx_file_path)
+#     elif reason == "FG_contract_Tender":
+#         doc = Document(docx_file_path1)
 
-    # Replace placeholders with user-provided values
-    for paragraph in doc.paragraphs:
-        if '[Your Full Name],' in paragraph.text:
-                paragraph.text = paragraph.text.replace('[Your Full Name],', f'{first_name} {middle_name} {last_name},')
-        if '[Your Address]' in paragraph.text:
-            paragraph.text = paragraph.text.replace('[Your Address]', f'{address},')
+#     # Replace placeholders with user-provided values
+#     for paragraph in doc.paragraphs:
+#         if '[Your Full Name],' in paragraph.text:
+#                 paragraph.text = paragraph.text.replace('[Your Full Name],', f'{first_name} {middle_name} {last_name},')
+#         if '[Your Address]' in paragraph.text:
+#             paragraph.text = paragraph.text.replace('[Your Address]', f'{address},')
 
-        if '[Phone Number]' in paragraph.text:
-            paragraph.text = paragraph.text.replace('[Phone Number]', f'{mobile},')
+#         if '[Phone Number]' in paragraph.text:
+#             paragraph.text = paragraph.text.replace('[Phone Number]', f'{mobile},')
 
-        if '[Date of Loss]' in paragraph.text:
-            paragraph.text = paragraph.text.replace('[Date of Loss]', f'{date_of_loss},')
+#         if '[Date of Loss]' in paragraph.text:
+#             paragraph.text = paragraph.text.replace('[Date of Loss]', f'{date_of_loss},')
 
-        if '[Date ]' in paragraph.text:
-            paragraph.text = paragraph.text.replace('[Date]', f'{date},')
+#         if '[Date ]' in paragraph.text:
+#             paragraph.text = paragraph.text.replace('[Date]', f'{date},')
 
-        if '[Male]' in paragraph.text:
-            paragraph.text = paragraph.text.replace('[Male]', f'{gender},')
+#         if '[Male]' in paragraph.text:
+#             paragraph.text = paragraph.text.replace('[Male]', f'{gender},')
 
-        if '[Company Address]' in paragraph.text:
-            paragraph.text = paragraph.text.replace('[Company Address]', f'{company_address},')
+#         if '[Company Address]' in paragraph.text:
+#             paragraph.text = paragraph.text.replace('[Company Address]', f'{company_address},')
 
-        if '[Position]' in paragraph.text:
-            paragraph.text = paragraph.text.replace('[Position]', f'{position},')
+#         if '[Position]' in paragraph.text:
+#             paragraph.text = paragraph.text.replace('[Position]', f'{position},')
 
-        if '[Religion]' in paragraph.text:
-            paragraph.text = paragraph.text.replace('[Religion]', f'{religion},')
+#         if '[Religion]' in paragraph.text:
+#             paragraph.text = paragraph.text.replace('[Religion]', f'{religion},')
 
-        if '[Seal $ Sign]' in paragraph.text:
-            paragraph.text = paragraph.text.replace('[Seal $ Sign]', f'{seal_sign},')
+#         if '[Seal $ Sign]' in paragraph.text:
+#             paragraph.text = paragraph.text.replace('[Seal $ Sign]', f'{seal_sign},')
 
-        if '[Year]' in paragraph.text:
-            paragraph.text = paragraph.text.replace('[Year]', "2024")
+#         if '[Year]' in paragraph.text:
+#             paragraph.text = paragraph.text.replace('[Year]', "2024")
 
-        if '[MTN network]' in paragraph.text:
-            paragraph.text = paragraph.text.replace('[MTN network]', f'{network},')
+#         if '[MTN network]' in paragraph.text:
+#             paragraph.text = paragraph.text.replace('[MTN network]', f'{network},')
 
-    # Save the modified DOCX file
-    modified_docx_path = f'{first_name + last_name}\'s modified_affidavit.docx'  # Replace with your desired file name
-    doc.save(modified_docx_path)
+#     # Save the modified DOCX file
+#     modified_docx_path = f'{first_name + last_name}\'s modified_affidavit.docx'  # Replace with your desired file name
+#     doc.save(modified_docx_path)
 
-    # Send email with the modified DOCX file as an attachment
-    send_email(email, f'{first_name} {last_name}\'s Affidavit for {reason}', 'Thank you for using Bioentrust to generate an e-affidavit.', modified_docx_path)
+#     # Send email with the modified DOCX file as an attachment
+#     send_email(email, f'{first_name} {last_name}\'s Affidavit for {reason}', 'Thank you for using Bioentrust to generate an e-affidavit.', modified_docx_path)
 
-    return jsonify(message='Affidavit generated and email sent successfully')
+#     return jsonify(message='Affidavit generated and email sent successfully')
 
 def send_email(to_email, subject, message, attachment_path):
     """
