@@ -1,16 +1,12 @@
 from flask import Flask, request, jsonify
-from docx import Document
+# from docx import Document
 import os
 from flask_cors import CORS
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
-<<<<<<< HEAD
 from pymongo import MongoClient
-=======
-import stat
->>>>>>> 2f1de703e8f0b8bd7b7e96446a18a961efd68dc2
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True, origins=["https://e-verification-bkfr.vercel.app", "http://127.0.0.1:5000", "http://127.0.0.1:5173", "https://www.bioentrust.net"])
