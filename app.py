@@ -6,16 +6,83 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
+from pymongo import MongoClient
 
 app = Flask(__name__)
-
-
 CORS(app, supports_credentials=True, origins=["https://e-verification-bkfr.vercel.app", "http://127.0.0.1:5000", "http://127.0.0.1:5173", "https://www.bioentrust.net"])
+
+
+
+password = os.getenv('mongo_password')
+# username = os.environ.get('mongo_username')
+mongo_uri = f'mongodb+srv://Phenzic:{password}@cluster0.ckb7jdf.mongodb.net/?retryWrites=true&w=majority'
+# mongo_uri = ["mongo_uri"] 
+print(mongo_uri)
+# "your_mongo_connection_string"
+
+
+client = MongoClient(mongo_uri)
+db = client.db
+court_data = db['court_data']
+print(court_data)
+
+@app.route('/court-signup', methods=['POST'])
+def court_signup():
+    try:
+
+        # Get data from the request
+        
+        # data = {"data": {
+        # "username": "LAGOS",
+        #         "color": "#6f00f8",
+        #         "verification": True,
+        #         "user_information": True,
+        #         "on_verification": True,
+        #         "redirect_url": "https://bioentrust.net/home/caffidavit/ca",
+        #         "courtLogo": "",
+        # "courtName": "Federal High Court of Lagos",
+        # "courtAddress": "Shehu Shagary Express Way, 1002 First Ave",
+        # "commissionerForOathName": "WAZIRI MUSA ALHASSAN",
+        # "commissionerForOathSignature": ""
+        # }
+        # }
+
+        data = request.json["data"]
+        print(data)
+        existing_user = court_data.find_one({'username': data['username']})
+        if existing_user:
+            raise Exception('User with this username already exists')
+
+        # Create a collection in MongoDB
+        # collection_name = data.get("collection_name", "default_collection")
+        # collection = db[collection_name]
+
+        # Add data to the collection
+        inserted_data = court_data.insert_one(data)
+        print(inserted_data)
+
+        # Response message
+        response_message = {
+            'status': 'success',
+            'message': 'Data added to MongoDB collection',
+            'inserted_id': str(inserted_data.inserted_id)
+        }
+
+        return jsonify(response_message), 200
+
+    except Exception as e:
+        # Handle exceptions and return an error response
+        error_message = {
+            'status': 'error',
+            'message': str(e)
+        }
+        return jsonify(error_message), 500
 
 @app.route('/')
 def index():
     return 'Welcome to the e-affidavit server!'
 
+@app.route('/court_signup', methods=['POST'])
 
 @app.route('/generate_affidavit', methods=['POST'])
 def generate_affidavit():
