@@ -11,6 +11,8 @@ from pymongo import MongoClient
 app = Flask(__name__)
 CORS(app, supports_credentials=True, origins=["https://e-verification-bkfr.vercel.app", "http://127.0.0.1:5000", "http://127.0.0.1:5173", "https://www.bioentrust.net"])
 
+
+
 password = os.getenv('mongo_password')
 mongo_uri = f'mongodb+srv://Phenzic:{password}@cluster0.ckb7jdf.mongodb.net/?retryWrites=true&w=majority'
 
