@@ -17,8 +17,6 @@ CORS(app, supports_credentials=True, origins=["https://e-verification-bkfr.verce
 
 password = os.getenv('mongo_password')
 mongo_uri = f'mongodb+srv://new_user:{password}@cluster0.ckb7jdf.mongodb.net/?retryWrites=true&w=majority'
-print(password)
-print(password)
 client = MongoClient(mongo_uri)
 db = client.db
 court_data = db['court_data']
