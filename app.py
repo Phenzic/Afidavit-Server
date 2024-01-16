@@ -16,7 +16,7 @@ CORS(app, supports_credentials=True, origins=["https://e-verification-bkfr.verce
 
 
 password = os.getenv('mongo_password')
-mongo_uri = f'mongodb+srv://new_user:{password}@cluster0.ckb7jdf.mongodb.net/?retryWrites=true&w=majority'
+mongo_uri = f'mongodb+srv://Phenzic:{password}@cluster0.ckb7jdf.mongodb.net/?retryWrites=true&w=majority'
 client = MongoClient(mongo_uri)
 db = client.db
 court_data = db['court_data']
@@ -64,7 +64,6 @@ def get_id():
     # TODO: Implement the logic to get the app ID
     try:
         app_id = request.json["app_id"]
-        print(app_id)
         obj = court_data.find_one({'_id': ObjectId(app_id)})
         existing_user = court_data.find_one({'_id': ObjectId(app_id)})
         if existing_user:
@@ -101,9 +100,6 @@ def get_id():
 def keep_affidavit():
     try:
         data = request.json["data"]
-        # data['id'] = str(uuid.uuid4())
-        # print(data["id"])
-        print()
         existing_data = affidavit_data.find_one({'id': data['id']})
         if existing_data:
             # return(existing_data, "Affidavit already exists")
