@@ -17,7 +17,6 @@ CORS(app, supports_credentials=True, origins=["https://e-verification-bkfr.verce
 
 username = os.getenv('MONGODB_USERNAME')
 password = os.getenv('MONGODB_PASSWORD')
-print(username, password)
 
 
 mongo_uri = f'mongodb+srv://{username}:{password}@cluster0.ckb7jdf.mongodb.net/?retryWrites=true&w=majority'
@@ -57,6 +56,10 @@ def court_signup():
             'message': str(e)
         }
         return jsonify(error_message), 500
+
+@app.route('/some')
+def some():
+    return os.getenv('SOMETHING')
 
 
 @app.route('/')
