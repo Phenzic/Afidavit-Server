@@ -144,11 +144,14 @@ def keep_affidavit():
                             existing_data['id'])
 
         inserted_data = affidavit_data.insert_one(data)
+        new_data = affidavit_data.find_one({'id': data['id']})
+
 
         response_message = {
             'status': 'success',
             'message': 'Data added to MongoDB collection',
-            'inserted_id': str(inserted_data.inserted_id)
+            'inserted_id': str(inserted_data.inserted_id),
+            'new_data': str(new_data["_id"])
         }
 
         return jsonify(response_message), 200
