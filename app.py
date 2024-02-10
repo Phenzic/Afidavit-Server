@@ -57,9 +57,10 @@ def court_signup():
         }
         return jsonify(error_message), 500
 
+
 @app.route('/some')
 def some():
-    return os.getenv('SOMETHING')
+    return jsonify(os.getenv('SOMETHING'))
 
 
 @app.route('/')
