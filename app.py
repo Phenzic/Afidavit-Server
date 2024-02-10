@@ -15,8 +15,10 @@ app = Flask(__name__)
 CORS(app, supports_credentials=True, origins=["https://e-verification-bkfr.vercel.app", "http://127.0.0.1:5000", "http://127.0.0.1:5173", "https://www.bioentrust.net"])
 
 
-password = os.getenv('mongo_password')
-mongo_uri = f'mongodb+srv://Phenzic:{password}@cluster0.ckb7jdf.mongodb.net/?retryWrites=true&w=majority'
+username = os.getenv('MONGODB_USERNAME')
+password = os.getenv('MONGODB_PASSWORD')
+
+mongo_uri = f'mongodb+srv://Phenzic:anotherpassword@cluster0.ckb7jdf.mongodb.net/?retryWrites=true&w=majority'
 client = MongoClient(mongo_uri)
 db = client.db
 court_data = db['court_data']
@@ -32,16 +34,18 @@ def court_signup():
         existing_user = court_data.find_one({'username': data['username']})
         if existing_user:
             court_data.update_one({'username': data['username']}, {'$set': data})
-        else: 
+        else:
             raise Exception('Access Denied')
 
         inserted_data = court_data.insert_one(data)
+        new_data = court_data.find_one({'username': data['username']})
+
 
         response_message = {
             'status': 'success',
             'message': 'Data added to MongoDB collection',
-            'inserted_id': str(inserted_data.inserted_id)
-        }
+            'inserted_id': str(new_data['_id']),
+            }
 
         return jsonify(response_message), 200
 
@@ -98,25 +102,25 @@ def get_id():
 
 
 
-@app.route('/update_data', methods=['POST'])
-def update_data():
-    """
-    Endpoint for court signup.
-    """
+# @app.route('/update_data', methods=['POST'])
+# def update_data():
+#     """
+#     Endpoint for court signup.
+#     """
 
-    try:
-        data = request.json["data"]
-        existing_user = court_data.find_one({'username': data['username']})
-        if existing_user:
-            raise Exception('User with this username already exists')
+#     try:
+#         data = request.json["data"]
+#         existing_user = court_data.find_one({'username': data['username']})
+#         if existing_user:
+#             raise Exception('User with this username already exists')
 
-        inserted_data = court_data.insert_one(data)
+#         inserted_data = court_data.insert_one(data)
 
-        response_message = {
-            'status': 'success',
-            'message': 'Data added to MongoDB collection',
-            'inserted_id': str(inserted_data.inserted_id)
-        }
+#         response_message = {
+#             'status': 'success',
+#             'message': 'Data added to MongoDB collection',
+#             'inserted_id': str(inserted_data)
+#         }
 
         return jsonify(response_message), 200
 
