@@ -27,12 +27,13 @@ def court_signup():
     """
     Endpoint for court signup.
     """
-
     try:
         data = request.json["data"]
         existing_user = court_data.find_one({'username': data['username']})
         if existing_user:
-            raise Exception('User with this username already exists')
+            court_data.update_one({'username': data['username']}, {'$set': data})
+        else: 
+            raise Exception('Access Denied')
 
         inserted_data = court_data.insert_one(data)
 
@@ -50,6 +51,7 @@ def court_signup():
             'message': str(e)
         }
         return jsonify(error_message), 500
+
 
 @app.route('/')
 def index():
@@ -95,6 +97,35 @@ def get_id():
         return jsonify(error_message), 500
 
 
+
+@app.route('/update_data', methods=['POST'])
+def update_data():
+    """
+    Endpoint for court signup.
+    """
+
+    try:
+        data = request.json["data"]
+        existing_user = court_data.find_one({'username': data['username']})
+        if existing_user:
+            raise Exception('User with this username already exists')
+
+        inserted_data = court_data.insert_one(data)
+
+        response_message = {
+            'status': 'success',
+            'message': 'Data added to MongoDB collection',
+            'inserted_id': str(inserted_data.inserted_id)
+        }
+
+        return jsonify(response_message), 200
+
+    except Exception as e:
+        error_message = {
+            'status': 'error',
+            'message': str(e)
+        }
+        return jsonify(error_message), 500
 
 @app.route('/keep_affidavit', methods=['POST'])
 def keep_affidavit():
