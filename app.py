@@ -32,14 +32,14 @@ def court_signup():
     """
     try:
         data = request.json["data"]
-        existing_user = court_data.find_one({'username': data['username']})
+        existing_user = court_data.find_one({'name': data['name']})
         if existing_user:
-            court_data.update_one({'username': data['username']}, {'$set': data})
+            court_data.update_one({'name': data['name']}, {'$set': data})
         else:
             raise Exception('Access Denied')
 
         inserted_data = court_data.insert_one(data)
-        new_data = court_data.find_one({'username': data['username']})
+        new_data = court_data.find_one({'name': data['name']})
 
 
         response_message = {
@@ -58,6 +58,7 @@ def court_signup():
         return jsonify(error_message), 500
 
 
+something = os.getenv('SOMETHING')
 @app.route('/some')
 def some():
     return jsonify(os.getenv('SOMETHING'))
@@ -84,7 +85,7 @@ def get_id():
                 'message': 'App ID found',
                 'data': {
                     '_id': str(existing_user['_id']),  # Convert ObjectId to string
-                    'username': existing_user['username'],
+                    'name': existing_user['name'],
                     'color': existing_user['color'],
                     'verification': existing_user['verification'],
                     'user_information': existing_user['user_information'],
