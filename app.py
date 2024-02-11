@@ -36,8 +36,7 @@ def court_signup():
         if existing_user:
             court_data.update_one({'name': data['name']}, {'$set': data})
         else:
-            raise Exception('Access Denied')
-
+            court_data.insert_one(data)
         inserted_data = court_data.insert_one(data)
         new_data = court_data.find_one({'name': data['name']})
 
