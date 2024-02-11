@@ -36,15 +36,15 @@ def court_signup():
         if existing_user:
             court_data.update_one({'name': data['name']}, {'$set': data})
         else:
-            court_data.insert_one(data)
-        inserted_data = court_data.insert_one(data)
+            court_data.insert_one(data)            
+        # inserted_data = court_data.insert_one(data)
         new_data = court_data.find_one({'name': data['name']})
 
 
         response_message = {
             'status': 'success',
             'message': 'Data added to MongoDB collection',
-            'inserted_id': str(new_data['_id']),
+            'court_id': str(new_data['_id']),
             }
 
         return jsonify(response_message), 200
