@@ -9,11 +9,16 @@ from email.mime.application import MIMEApplication
 from pymongo import MongoClient
 from bson import ObjectId
 import uuid
-from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token, jwt_required, get_jwt_identity
+from flask_jwt_extended import  JWTManager, create_access_token, create_refresh_token, jwt_required, get_jwt_identity
 from bson.json_util import dumps
 
 
 app = Flask(__name__)
+app.config['JWT_TOKEN_LOCATION'] = ['headers']
+app.config['JWT_HEADER_NAME'] = 'Authorization'
+app.config['JWT_HEADER_TYPE'] = 'Bearer'
+app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
+jwt = JWTManager(app)
 CORS(app, supports_credentials=True, origins=["https://e-verification-bkfr.vercel.app", "http://127.0.0.1:5000", "http://127.0.0.1:5173", "https://www.bioentrust.net"])
 
 
@@ -28,18 +33,17 @@ court_data = db['court_data']
 affidavit_data = db['affidavit_data']
 
 
-# @dev signs up a court details and updates it, only if the creator calls the request,
-# @dev returns the court_id of the court that was signed up
 @app.route('/court-signup', methods=['POST'])
 @jwt_required()
 def court_signup():
-    current_user = get_jwt_identity()
     """
     Endpoint for court signup.
     """
+    creator = get_jwt_identity()
+    print(creator)
     try:
         data = request.json["data"]
-        data["creator"] = current_user
+        data["creator"] = creator
         existing_user = court_data.find_one({'name': data['name']})
         if existing_user:
             court_data.update_one({'name': data['name']}, {'$set': data})
@@ -78,17 +82,21 @@ def index():
     """
     return 'Welcome to the e-affidavit server!'
 
-
-@app.route('/get_court_details', methods=['POST'])
+# @user_admin this is meant for court admins to get the court details assigned to their client_id created on the application
+@app.route('/get-court-details')
+@jwt_required()
 def get_court_details():
     # Endpoint to get app ID.
     # TODO: Implement the logic to get the app ID
     try:
-        app_id = request.json["app_id"]
-        existing_user = court_data.find_one({'_id': ObjectId(app_id)})
+        creator = get_jwt_identity()
+        # app_id = request.json["app_id"]
+        existing_user = court_data.find_one({'creator': creator})
+        existing_user['_id'] = str(existing_user['_id'])  # Convert ObjectId to string
+
         if existing_user:    
-            existing_user.pop('_id')
-            existing_user["_id"] = app_id  # Exclude the '_id' field from the response
+            # existing_user.pop('_id')
+            # existing_user["_id"] = app_id  # Exclude the '_id' field from the response
             response_message = {
                 'status': 'success',
                 'message': 'App ID found',
@@ -104,10 +112,42 @@ def get_court_details():
         }
         return jsonify(error_message), 500
 
+# @user this endpoint is called by a regular user who wants to get court details for creating an affidavit
 
+@app.route('/user-get-court-details', methods=['POST'])
+def user_get_court_details():
+    # Endpoint to get app ID.
+    # TODO: Implement the logic to get the app ID
+    # from bson.objectid import ObjectId
+    try:
+        app_id = request.json["app_id"]
+        existing_user = court_data.find_one({'_id': ObjectId(app_id)})
+        if existing_user:
+            existing_user['_id'] = str(existing_user['_id'])  # Convert ObjectId to string
+            response_message = {
+                'status': 'success',
+                'message': 'App ID found',
+                'data': existing_user
+            }
+            return jsonify(response_message), 200
+        else:
+            response_message = {
+                'status': 'error',
+                'message': 'App ID not found',
+            }
+            return jsonify(response_message), 404
+    except Exception as e:
+        error_message = {
+            'status': 'error',
+            'message': str(e)
+        }
 
-@app.route('/save_affidavit', methods=['POST'])
-def save_affidavit():
+        return jsonify(error_message), 500
+    
+
+# @user can create a nrw affidavit providing a court_id and newly created affidavit information
+@app.route('/create-affidavit', methods=['POST'])
+def create_affidavit():
     try:
         data = request.json["data"]
         existing_data = affidavit_data.find_one({'id': data['id']})
@@ -116,13 +156,14 @@ def save_affidavit():
             raise Exception('Affidavit already exists',
                             existing_data['id'])
 
-        inserted_data = affidavit_data.insert_one(data)
+        affidavit_data.insert_one(data)
         new_data = affidavit_data.find_one({'id': data['id']})
+        court_data.update_one({'_id': ObjectId(new_data['court_id'])}, {'$push': {'affidavits': new_data['id']}})
 
         response_message = {
             'status': 'success',
             'message': 'Data added to MongoDB collection',
-            'inserted_id': str(inserted_data.inserted_id),
+            # 'inserted_id': str(inserted_data.inserted_id),
             'new_data': str(new_data["_id"])
         }
 
@@ -138,7 +179,9 @@ def save_affidavit():
 
 
 @app.route('/getAllCourtAffidavit', methods=['POST'])
+@jwt_required()
 def get_court_affidavit():
+    creator = get_jwt_identity()
     court_id = request.json["court_id"]
     try:
         result = affidavit_data.find({'court_id': court_id})
