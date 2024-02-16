@@ -40,7 +40,6 @@ def court_signup():
     Endpoint for court signup.
     """
     creator = get_jwt_identity()
-    print(creator)
     try:
         data = request.json["data"]
         data["creator"] = creator
@@ -198,13 +197,28 @@ def get_court_affidavit():
         return jsonify(error_message), 500
 
 @app.route('/getAllCourtAffidavitId', methods=['POST'])
-def get_affidavit():
+def get_affidavit_id():
     court_id = request.json["court_id"]
     try:
         results = affidavit_data.find({'court_id': court_id}, {'_id': 1})
         # Convert _id to string
         results = [{'_id': str(res['_id'])} for res in results]
         return jsonify(results), 200
+    except Exception as e:
+        error_message = {
+            'status': 'error',
+            'message': str(e)
+        }
+        return jsonify(error_message), 500
+    
+@app.route('/getAffidavit', methods=['POST'])
+def get_affidavit():
+    affidavit_id = request.json["id"]
+    court_id = request.json["pro_id"]
+    try:
+        result = affidavit_data.find_one({'id': affidavit_id, 'court_id': court_id})
+        result['_id'] = str(result['_id'])  # Convert ObjectId to string
+        return jsonify(result), 200
     except Exception as e:
         error_message = {
             'status': 'error',
